@@ -18,9 +18,107 @@ pytest-cov = "^4.1.0"
 pytest = "^8.0.0"
 tox = "^4.12.1"
 
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.2.1"
+pre-commit = "^3.6.0"
+
 [tool.poetry.scripts]
 test = 'scripts:test'
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+src = ["src"]
+select = ["ALL"]
+
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "I",
+    "N",
+    "Q",
+    "S",
+    "T",
+    "W",
+    "ANN",
+    "ARG",
+    "BLE",
+    "COM",
+    "DJ",
+    "DTZ",
+    "EM",
+    "ERA",
+    "EXE",
+    "FBT",
+    "ICN",
+    "INP",
+    "ISC",
+    "NPY",
+    "PD",
+    "PGH",
+    "PIE",
+    "PL",
+    "PT",
+    "PTH",
+    "PYI",
+    "RET",
+    "RSE",
+    "RUF",
+    "SIM",
+    "SLF",
+    "TCH",
+    "TID",
+    "TRY",
+    "UP",
+    "YTT",
+]
+
+ignore = [
+    "ANN",    # Type hints related, let mypy/pyright handle these.
+    "COM812", # "Trailing comma missing". If black is happy, I'm happy.
+    "D104",   # Missing docstring in public package
+    "D100",   # Missing docstring in public module
+    "E501",   # "Line too long". If black is happy, I'm happy.
+    "EM101",  # "Exception must not use a string literal, assign to variable first"
+    "EM102",  # "Exception must not use an f-string literal, assign to variable first"
+    "SIM108", # "Use ternary operator ...". Ternary is harmful for readability in some cases.
+    "TRY003", # "Avoid specifying long messages outside the exception class"
+    "FIX002", # Allow TODOs in the code
+    "TD002",  # Missing author in TODO
+    "TD003",  # Allow simples TODOs
+    "D101",   # Missing docstring in public class
+    "D102",   # Missing docstring in public method
+    "D106",   # Missing docstring in public nested class
+    "D401",   # First line of docstring should be in imperative mood: "Returns the short name for the user."
+    "D105",   # Missing docstring in magic method
+    "D205",   # 1 blank line required between summary line and description
+    "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
+    "ARG002", # Unused method argument: `obj`
+    "PGH004", # Unused method argument: `obj`
+    "F823",   # Checks for undefined local variables.
+]
+
+exclude = ["tests", "migrations", "tests.py"]
+force-exclude = true
+line-length = 120
+
+[tool.ruff.flake8-annotations]
+allow-star-arg-any = true
+
+[tool.ruff.isort]
+known-first-party = ["src"]
+
+[tool.ruff.pydocstyle]
+convention = "numpy"
+
+[tool.coverage.run]
+omit = ["src/tests/*", "src/config/*", "__init__*"]

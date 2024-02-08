@@ -1,20 +1,17 @@
-# coding=utf-8
-from __future__ import division, unicode_literals
-
 import re
+from pathlib import Path
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
 from django.utils.encoding import smart_str
-
+from django.utils.translation import gettext_lazy as _
 
 COMMON_SEQUENCES = [
     "0123456789",
     "`1234567890-=",
     "~!@#$%^&*()_+",
     "abcdefghijklmnopqrstuvwxyz",
-    "qwertyuiop[]\\asdfghjkl;\'zxcvbnm,./",
+    "qwertyuiop[]\\asdfghjkl;'zxcvbnm,./",
     'qwertyuiop{}|asdfghjkl;"zxcvbnm<>?',
     "qwertyuiopasdfghjklzxcvbnm",
     "1qaz2wsx3edc4rfv5tgb6yhn7ujm8ik,9ol.0p;/-['=]\\",
@@ -28,21 +25,15 @@ DICT_FILESIZE = -1
 DICT_MAX_CACHE = 1000000
 
 # Settings
-PASSWORD_MIN_LENGTH = getattr(
-    settings, "PASSWORD_MIN_LENGTH", 6)
-PASSWORD_MAX_LENGTH = getattr(
-    settings, "PASSWORD_MAX_LENGTH", None)
-PASSWORD_DICTIONARY = getattr(
-    settings, "PASSWORD_DICTIONARY", None)
-PASSWORD_MATCH_THRESHOLD = getattr(
-    settings, "PASSWORD_MATCH_THRESHOLD", 0.9)
-PASSWORD_COMMON_SEQUENCES = getattr(
-    settings, "PASSWORD_COMMON_SEQUENCES", COMMON_SEQUENCES)
-PASSWORD_COMPLEXITY = getattr(
-    settings, "PASSWORD_COMPLEXITY", None)
+PASSWORD_MIN_LENGTH = getattr(settings, "PASSWORD_MIN_LENGTH", 6)
+PASSWORD_MAX_LENGTH = getattr(settings, "PASSWORD_MAX_LENGTH", None)
+PASSWORD_DICTIONARY = getattr(settings, "PASSWORD_DICTIONARY", None)
+PASSWORD_MATCH_THRESHOLD = getattr(settings, "PASSWORD_MATCH_THRESHOLD", 0.9)
+PASSWORD_COMMON_SEQUENCES = getattr(settings, "PASSWORD_COMMON_SEQUENCES", COMMON_SEQUENCES)
+PASSWORD_COMPLEXITY = getattr(settings, "PASSWORD_COMPLEXITY", None)
 
 
-class LengthValidator(object):
+class LengthValidator:
     message = _("Invalid Length (%s)")
     code = "length"
 
@@ -61,14 +52,14 @@ class LengthValidator(object):
             raise ValidationError(self.message % err, code=self.code)
 
 
-class ComplexityValidator(object):
+class ComplexityValidator:
     message = _("Must be more complex (%s)")
     code = "complexity"
 
     def __init__(self, complexities):
         self.complexities = complexities
 
-    def __call__(self, value):
+    def __call__(self, value):  # noqa
         if self.complexities is None:
             return
 
@@ -87,40 +78,27 @@ class ComplexityValidator(object):
             elif not character.isspace():
                 special.add(character)
 
-        words = set(re.findall(r'\b\w+', value, re.UNICODE))
+        words = set(re.findall(r"\b\w+", value, re.UNICODE))
 
         errors = []
         if len(uppercase) < self.complexities.get("UPPER", 0):
-            errors.append(
-                _("%(UPPER)s or more unique uppercase characters") %
-                self.complexities)
+            errors.append(_("%(UPPER)s or more unique uppercase characters") % self.complexities)
         if len(lowercase) < self.complexities.get("LOWER", 0):
-            errors.append(
-                _("%(LOWER)s or more unique lowercase characters") %
-                self.complexities)
+            errors.append(_("%(LOWER)s or more unique lowercase characters") % self.complexities)
         if len(letters) < self.complexities.get("LETTERS", 0):
-            errors.append(
-                _("%(LETTERS)s or more unique letters") %
-                self.complexities)
+            errors.append(_("%(LETTERS)s or more unique letters") % self.complexities)
         if len(digits) < self.complexities.get("DIGITS", 0):
-            errors.append(
-                _("%(DIGITS)s or more unique digits") %
-                self.complexities)
+            errors.append(_("%(DIGITS)s or more unique digits") % self.complexities)
         if len(special) < self.complexities.get("SPECIAL", 0):
-            errors.append(
-                _("%(SPECIAL)s or more non unique special characters") %
-                self.complexities)
+            errors.append(_("%(SPECIAL)s or more non unique special characters") % self.complexities)
         if len(words) < self.complexities.get("WORDS", 0):
-            errors.append(
-                _("%(WORDS)s or more unique words") %
-                self.complexities)
+            errors.append(_("%(WORDS)s or more unique words") % self.complexities)
 
         if errors:
-            raise ValidationError(self.message % (_(u'must contain ') + u', '.join(errors),),
-                                  code=self.code)
+            raise ValidationError(self.message % (_("must contain ") + ", ".join(errors),), code=self.code)
 
 
-class BaseSimilarityValidator(object):
+class BaseSimilarityValidator:
     message = _("Too Similar to [%(haystacks)s]")
     code = "similarity"
 
@@ -135,21 +113,17 @@ class BaseSimilarityValidator(object):
         needle, haystack = needle.lower(), haystack.lower()
         m, n = len(needle), len(haystack)
 
-        if m == 1:
-            if needle not in haystack:
-                return -1
+        if m == 1 and needle not in haystack:
+            return -1
         if n == 0:
             return m
 
         row1 = [0] * (n + 1)
-        for i in range(0, m):
+        for i in range(m):
             row2 = [i + 1]
-            for j in range(0, n):
+            for j in range(n):
                 cost = 1 if needle[i] != haystack[j] else 0
-                row2.append(min(
-                    row1[j + 1] + 1,
-                    row2[j] + 1,
-                    row1[j] + cost))
+                row2.append(min(row1[j + 1] + 1, row2[j] + 1, row1[j] + cost))
             row1 = row2
         return min(row1)
 
@@ -161,7 +135,8 @@ class BaseSimilarityValidator(object):
             if similarity >= self.threshold:
                 raise ValidationError(
                     self.message % {"haystacks": ", ".join(self.haystacks)},
-                    code=self.code)
+                    code=self.code,
+                )
 
 
 class DictionaryValidator(BaseSimilarityValidator):
@@ -174,23 +149,20 @@ class DictionaryValidator(BaseSimilarityValidator):
             words = self.get_dictionary_words(dictionary)
         if words:
             haystacks.extend(words)
-        super(DictionaryValidator, self).__init__(
-            haystacks=haystacks,
-            threshold=threshold)
+        super().__init__(haystacks=haystacks, threshold=threshold)
 
     def get_dictionary_words(self, dictionary):
         if DICT_CACHE:
             return DICT_CACHE
         if DICT_FILESIZE == -1:
-            f = open(dictionary)
-            f.seek(0,2)
-            DICT_FILESIZE = f.tell()
-            f.close()
-            if DICT_FILESIZE < 1000000:
-                with open(dictionary) as dictionary:
-                    DICT_CACHE = [smart_str(x.strip()) for x in dictionary.readlines()]
-                    return DICT_CACHE
-        with open(dictionary) as dictionary:
+            with Path.open(dictionary) as f:
+                f.seek(0, 2)
+                DICT_FILESIZE = f.tell()  # noqa: N806
+
+            if DICT_FILESIZE < 1000000:  # noqa: PLR2004
+                with Path.open(dictionary) as dictionary:
+                    return [smart_str(x.strip()) for x in dictionary.readlines()]
+        with Path.open(dictionary) as dictionary:
             return [smart_str(x.strip()) for x in dictionary.readlines()]
 
 

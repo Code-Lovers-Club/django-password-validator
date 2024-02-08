@@ -1,10 +1,6 @@
 import subprocess
 
+
 def test():
-    """
-    Run all unittests. Equivalent to:
-    `poetry run python -u -m unittest discover`
-    """
-    subprocess.run(
-        ['python', '-u', '-m', 'unittest']
-    )
+    """Run all unittests."""
+    subprocess.run(["python", "-u", "-m", "unittest"], check=False)  # noqa: S603 S607
