@@ -36,4 +36,4 @@ jobs:
         run: |-
           poetry publish
         env:
-          POETRY_PYPI_TOKEN_PYPI: ${{ POETRY_PYPI_TOKEN_PYPI }}
+          POETRY_PYPI_TOKEN_PYPI: ${{ vars.POETRY_PYPI_TOKEN_PYPI }}
