@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "passwords"
+version = "0.5.0"
+description = "django-passwords is a reusable app that provides a form field and validators that check the strength of a password."
+authors = ["Dharwin Perez <dharwin@codelovers.club>"]
+license = "LICENSE"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+django = "^5.0.2"
+
+
+[tool.poetry.group.test.dependencies]
+coverage = "^7.4.1"
+flake8 = "^7.0.0"
+pytest-cov = "^4.1.0"
+pytest = "^8.0.0"
+tox = "^4.12.1"
+
+[tool.poetry.scripts]
+test = 'scripts:test'
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
