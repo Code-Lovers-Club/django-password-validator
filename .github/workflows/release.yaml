@@ -1,0 +1,39 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  pypi-publish:
+    name: Upload Release to PyPI
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+      - name: Install dependencies
+        run: |
+          python -m pip install -U pip poetry
+          poetry install
+      - name: Build package
+        run: |-
+          poetry build
+      - name: Create Github Release
+        run: |-
+          export VERSION=`grep __version__ passwords/__init__.py | grep -o '[0-9][^"]*'`
+          gh release create $VERSION --title $VERSION --generate-notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - name: Publish package distributions to PyPI
+        run: |-
+          poetry publish
+        env:
+          POETRY_PYPI_TOKEN_PYPI: ${{ POETRY_PYPI_TOKEN_PYPI }}
