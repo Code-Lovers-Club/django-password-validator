@@ -2,39 +2,16 @@ import re
 
 from pathlib import Path
 
-from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils.encoding import smart_str
 from django.utils.translation import gettext_lazy as _
 
+from passwords.settings import pwd_settings
 
-COMMON_SEQUENCES = [
-    "0123456789",
-    "`1234567890-=",
-    "~!@#$%^&*()_+",
-    "abcdefghijklmnopqrstuvwxyz",
-    "qwertyuiop[]\\asdfghjkl;'zxcvbnm,./",
-    'qwertyuiop{}|asdfghjkl;"zxcvbnm<>?',
-    "qwertyuiopasdfghjklzxcvbnm",
-    "1qaz2wsx3edc4rfv5tgb6yhn7ujm8ik,9ol.0p;/-['=]\\",
-    "qazwsxedcrfvtgbyhnujmikolp",
-    "qwertzuiopü+asdfghjklöä#<yxcvbnm,.-",
-    "qwertzuiopü*asdfghjklöä'>yxcvbnm;:_",
-    "qaywsxedcrfvtgbzhnujmikolp",
-]
+
 DICT_CACHE = []
 DICT_FILESIZE = -1
 DICT_MAX_CACHE = 1000000
-
-# Settings
-PASSWORD_MIN_LENGTH = getattr(settings, "PASSWORD_MIN_LENGTH", 6)
-PASSWORD_MAX_LENGTH = getattr(settings, "PASSWORD_MAX_LENGTH", None)
-PASSWORD_DICTIONARY = getattr(settings, "PASSWORD_DICTIONARY", None)
-PASSWORD_MATCH_THRESHOLD = getattr(settings, "PASSWORD_MATCH_THRESHOLD", 0.9)
-PASSWORD_COMMON_SEQUENCES = getattr(
-    settings, "PASSWORD_COMMON_SEQUENCES", COMMON_SEQUENCES
-)
-PASSWORD_COMPLEXITY = getattr(settings, "PASSWORD_COMPLEXITY", None)
 
 
 class LengthValidator:
@@ -118,7 +95,7 @@ class BaseSimilarityValidator:
     def __init__(self, haystacks=None, threshold=None):
         self.haystacks = haystacks if haystacks else []
         if threshold is None:
-            self.threshold = PASSWORD_MATCH_THRESHOLD
+            self.threshold = pwd_settings.PASSWORD_MATCH_THRESHOLD
         else:
             self.threshold = threshold
 
@@ -184,7 +161,9 @@ class CommonSequenceValidator(BaseSimilarityValidator):
     code = "common_sequence"
 
 
-validate_length = LengthValidator(PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH)
-complexity = ComplexityValidator(PASSWORD_COMPLEXITY)
-dictionary_words = DictionaryValidator(dictionary=PASSWORD_DICTIONARY)
-common_sequences = CommonSequenceValidator(PASSWORD_COMMON_SEQUENCES)
+validate_length = LengthValidator(
+    pwd_settings.PASSWORD_MIN_LENGTH, pwd_settings.PASSWORD_MAX_LENGTH
+)
+complexity = ComplexityValidator(pwd_settings.PASSWORD_COMPLEXITY)
+dictionary_words = DictionaryValidator(dictionary=pwd_settings.PASSWORD_DICTIONARY)
+common_sequences = CommonSequenceValidator(pwd_settings.PASSWORD_COMMON_SEQUENCES)

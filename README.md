@@ -26,49 +26,59 @@ Or manually by downloading a tarball and typing::
 
 django-password-validator adds 6 optional settings
 
-_Optional:_
+`PASSWORD_MIN_LENGTH` : Specifies minimum length for passwords. Defaults to 6.
 
-#### Specifies minimum length for passwords:
+`PASSWORD_MAX_LENGTH` : Specifies maximum length for passwords. Defaults to None.
+
+`PASSWORD_DICTIONARY` : Specifies the location of a dictionary (file with one word per line). Defaults to None.
+
+`PASSWORD_MATCH_THRESHOLD` : Specifies how close a fuzzy match has to be to be considered a match. Defaults to 0.9, should be 0.0 - 1.0 where 1.0 means exactly the same.
+
+`PASSWORD_COMMON_SEQUENCES` : Specifies a list of common sequences to attempt to match a password against.
 
 ```python
-PASSWORD_MIN_LENGTH = 6 # Defaults to 6
+[
+    "0123456789",
+    "`1234567890-=",
+    "~!@#$%^&*()_+",
+    "abcdefghijklmnopqrstuvwxyz",
+    "qwertyuiop[]\\asdfghjkl;'zxcvbnm,./",
+    'qwertyuiop{}|asdfghjkl;"zxcvbnm<>?',
+    "qwertyuiopasdfghjklzxcvbnm",
+    "1qaz2wsx3edc4rfv5tgb6yhn7ujm8ik,9ol.0p;/-['=]\\",
+    "qazwsxedcrfvtgbyhnujmikolp",
+    "qwertzuiopü+asdfghjklöä#<yxcvbnm,.-",
+    "qwertzuiopü*asdfghjklöä'>yxcvbnm;:_",
+    "qaywsxedcrfvtgbzhnujmikolp",
+]
 ```
 
-#### Specifies maximum length for passwords:
+`PASSWORD_COMPLEXITY` : Specifies number of characters within various sets that a password must contain. You can omit any or all of these for no limit for that particular set.
+
+    UPPER:      Uppercase
+    LOWER:      Lowercase
+    LETTERS:    Either uppercase or lowercase letters
+    DIGITS:     Digits
+    SPECIAL:    Not alphanumeric, space or punctuation character
+    WORDS:      Words (alphanumeric sequences separated by a whitespace or punctuation character)
+
 
 ```python
- PASSWORD_MAX_LENGTH = 120 # Defaults to None
-```
-
-#### Specifies the location of a dictionary (file with one word per line):
-
-```python
-PASSWORD_DICTIONARY = "/usr/share/dict/words" # Defaults to None
-```
-
-#### Specifies how close a fuzzy match has to be to be considered a match:
-
-```python
-PASSWORD_MATCH_THRESHOLD = 0.9 # Defaults to 0.9, should be 0.0 - 1.0 where 1.0 means exactly the same.
-```
-
-#### Specifies a list of common sequences to attempt to match a password against:
-
-```python
-PASSWORD_COMMON_SEQUENCES = [] # Should be a list of strings, see passwords/validators.py for default
-```
-
-#### Specifies number of characters within various sets that a password must contain:
-
-```python
-PASSWORD_COMPLEXITY = { # You can omit any or all of these for no limit for that particular set
-            "UPPER": 1,     # Uppercase
-            "LOWER": 1,     # Lowercase
-            "LETTERS": 1,   # Either uppercase or lowercase letters
-            "DIGITS": 1,    # Digits
-            "SPECIAL": 1,   # Not alphanumeric, space or punctuation character
-            "WORDS": 1      # Words (alphanumeric sequences separated by a whitespace or punctuation character)
-        }
+PWD_VALIDATOR = {
+    "PASSWORD_MIN_LENGTH" = 6,
+    "PASSWORD_MAX_LENGTH" = 120,
+    "PASSWORD_DICTIONARY" = "/usr/share/dict/words",
+    "PASSWORD_MATCH_THRESHOLD" = 0.9,
+    "PASSWORD_COMMON_SEQUENCES" = [],
+    "PASSWORD_COMPLEXITY" = {
+        "UPPER": 1,
+        "LOWER": 1,
+        "LETTERS": 1,
+        "DIGITS": 1,
+        "SPECIAL": 1,
+        "WORDS": 1
+    }
+}
 ```
 
 ## Usage
