@@ -1,10 +1,11 @@
-# -*- coding: utf8 -*-
-
-from __future__ import unicode_literals
-from django.core.exceptions import ValidationError
-from django.forms import PasswordInput, TimeInput, CharField
-from passwords import fields, validators
 from unittest import TestCase
+
+from django.core.exceptions import ValidationError
+from django.forms import CharField
+from django.forms import PasswordInput
+from django.forms import TimeInput
+from passwords import fields
+from passwords import validators
 
 
 class TestFields(TestCase):
@@ -29,7 +30,9 @@ class TestFields(TestCase):
         p.clean("password")  # robust defaults it seems
 
     def test_using_validators_on_other_fields(self):
-        dict_validator = validators.DictionaryValidator(words=["nostromo"], threshold=0.8)
+        dict_validator = validators.DictionaryValidator(
+            words=["nostromo"], threshold=0.8
+        )
         length_validator = validators.LengthValidator(min_length=2)
 
         p = CharField(validators=[dict_validator, length_validator])

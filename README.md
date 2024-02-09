@@ -1,4 +1,4 @@
-![Pypi](https://img.shields.io/pypi/v/django-password-validator?style=flat-square) 
+![Pypi](https://img.shields.io/pypi/v/django-password-validator?style=flat-square)
 ![Python](https://img.shields.io/pypi/pyversions/django-password-validator?style=flat-square)
 ![Django](https://img.shields.io/badge/Django-4.0%7C4.1%7C4.2%7C5.0-green)
 
@@ -26,7 +26,7 @@ Or manually by downloading a tarball and typing::
 
 django-password-validator adds 6 optional settings
 
-_Optional:_ 
+_Optional:_
 
 #### Specifies minimum length for passwords:
 

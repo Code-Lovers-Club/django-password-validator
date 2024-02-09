@@ -1,19 +1,20 @@
-from django.forms import CharField, PasswordInput
+import typing
+
+from django.forms import CharField
+from django.forms import PasswordInput
 from django.utils.translation import gettext_lazy as _
 
-from passwords.validators import (
-    PASSWORD_MAX_LENGTH,
-    PASSWORD_MIN_LENGTH,
-    common_sequences,
-    complexity,
-    dictionary_words,
-    validate_length,
-)
+from passwords.validators import PASSWORD_MAX_LENGTH
+from passwords.validators import PASSWORD_MIN_LENGTH
+from passwords.validators import common_sequences
+from passwords.validators import complexity
+from passwords.validators import dictionary_words
+from passwords.validators import validate_length
 
 
 class PasswordField(CharField):
 
-    default_validators = [
+    default_validators: typing.ClassVar[list] = [
         validate_length,
         common_sequences,
         dictionary_words,

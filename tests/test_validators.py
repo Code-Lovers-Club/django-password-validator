@@ -1,9 +1,7 @@
-# -*- coding: utf8 -*-
+from unittest import TestCase
 
-from __future__ import unicode_literals
 from django.core.exceptions import ValidationError
 from passwords import validators
-from unittest import TestCase
 
 
 class TestLengthValidatorTests(TestCase):
@@ -59,11 +57,11 @@ class TestLengthValidatorTests(TestCase):
 
 class ValidatorTestCase(TestCase):
 
-    def assertValid(self, validator, string):
+    def assert_valid(self, validator, string):
         # we test validationerror isn't raised by just running the validation.
         validator(string)
 
-    def assertInvalid(self, validator, string, exc_re=None):
+    def assert_invalid(self, validator, string, exc_re=None):
         if exc_re is None:
             with self.assertRaises(ValidationError):
                 validator(string)
@@ -79,66 +77,66 @@ class ComplexityValidatorTests(ValidatorTestCase):
 
     def test_minimum_uppercase_count(self):
         cv = self.mkvalidator(UPPER=0)
-        self.assertValid(cv, "no uppercase")
-        self.assertValid(cv, "Some UpperCase")
-        self.assertValid(cv, "ALL UPPERCASE")
+        self.assert_valid(cv, "no uppercase")
+        self.assert_valid(cv, "Some UpperCase")
+        self.assert_valid(cv, "ALL UPPERCASE")
 
         cv = self.mkvalidator(UPPER=1)
-        self.assertInvalid(cv, "no uppercase", "uppercase")
-        self.assertValid(cv, "Some UpperCase")
-        self.assertValid(cv, "ALL UPPERCASE")
+        self.assert_invalid(cv, "no uppercase", "uppercase")
+        self.assert_valid(cv, "Some UpperCase")
+        self.assert_valid(cv, "ALL UPPERCASE")
 
         cv = self.mkvalidator(UPPER=100)
-        self.assertInvalid(cv, "no uppercase", "uppercase")
-        self.assertInvalid(cv, "Some UpperCase", "uppercase")
-        self.assertInvalid(cv, "ALL UPPERCASE", "uppercase")
+        self.assert_invalid(cv, "no uppercase", "uppercase")
+        self.assert_invalid(cv, "Some UpperCase", "uppercase")
+        self.assert_invalid(cv, "ALL UPPERCASE", "uppercase")
 
     def test_minimum_lowercase_count(self):
         cv = self.mkvalidator(LOWER=0)
-        self.assertValid(cv, "NO LOWERCASE")
-        self.assertValid(cv, "sOME lOWERCASE")
-        self.assertValid(cv, "all lowercase")
+        self.assert_valid(cv, "NO LOWERCASE")
+        self.assert_valid(cv, "sOME lOWERCASE")
+        self.assert_valid(cv, "all lowercase")
 
         cv = self.mkvalidator(LOWER=1)
-        self.assertInvalid(cv, "NO LOWERCASE", "lowercase")
-        self.assertValid(cv, "sOME lOWERCASE")
-        self.assertValid(cv, "all lowercase")
+        self.assert_invalid(cv, "NO LOWERCASE", "lowercase")
+        self.assert_valid(cv, "sOME lOWERCASE")
+        self.assert_valid(cv, "all lowercase")
 
         cv = self.mkvalidator(LOWER=100)
-        self.assertInvalid(cv, "NO LOWERCASE", "lowercase")
-        self.assertInvalid(cv, "sOME lOWERCASE", "lowercase")
-        self.assertInvalid(cv, "all lowercase", "lowercase")
+        self.assert_invalid(cv, "NO LOWERCASE", "lowercase")
+        self.assert_invalid(cv, "sOME lOWERCASE", "lowercase")
+        self.assert_invalid(cv, "all lowercase", "lowercase")
 
     def test_minimum_letter_count(self):
         cv = self.mkvalidator(LETTERS=0)
-        self.assertValid(cv, "1234. ?")
-        self.assertValid(cv, "soME 123")
-        self.assertValid(cv, "allletters")
+        self.assert_valid(cv, "1234. ?")
+        self.assert_valid(cv, "soME 123")
+        self.assert_valid(cv, "allletters")
 
         cv = self.mkvalidator(LETTERS=1)
-        self.assertInvalid(cv, "1234. ?", "letter")
-        self.assertValid(cv, "soME 123")
-        self.assertValid(cv, "allletters")
+        self.assert_invalid(cv, "1234. ?", "letter")
+        self.assert_valid(cv, "soME 123")
+        self.assert_valid(cv, "allletters")
 
         cv = self.mkvalidator(LETTERS=100)
-        self.assertInvalid(cv, "1234. ?", "letter")
-        self.assertInvalid(cv, "soME 123", "letter")
-        self.assertInvalid(cv, "allletters", "letter")
+        self.assert_invalid(cv, "1234. ?", "letter")
+        self.assert_invalid(cv, "soME 123", "letter")
+        self.assert_invalid(cv, "allletters", "letter")
 
     def test_minimum_digit_count(self):
         cv = self.mkvalidator(DIGITS=0)
-        self.assertValid(cv, "")
-        self.assertValid(cv, "0")
-        self.assertValid(cv, "1")
-        self.assertValid(cv, "11")
-        self.assertValid(cv, "one 1")
+        self.assert_valid(cv, "")
+        self.assert_valid(cv, "0")
+        self.assert_valid(cv, "1")
+        self.assert_valid(cv, "11")
+        self.assert_valid(cv, "one 1")
 
         cv = self.mkvalidator(DIGITS=1)
-        self.assertInvalid(cv, "", "digits")
-        self.assertValid(cv, "0")
-        self.assertValid(cv, "1")
-        self.assertValid(cv, "11")
-        self.assertValid(cv, "one 1")
+        self.assert_invalid(cv, "", "digits")
+        self.assert_valid(cv, "0")
+        self.assert_valid(cv, "1")
+        self.assert_valid(cv, "11")
+        self.assert_valid(cv, "one 1")
 
     def test_minimum_punctuation_count(self):
         none = "no punctuation"
@@ -148,22 +146,22 @@ class ComplexityValidatorTests(ValidatorTestCase):
         allpunc = r'!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~'
 
         cv = self.mkvalidator(SPECIAL=0)
-        self.assertValid(cv, none)
-        self.assertValid(cv, one)
-        self.assertValid(cv, mixed)
-        self.assertValid(cv, allpunc)
+        self.assert_valid(cv, none)
+        self.assert_valid(cv, one)
+        self.assert_valid(cv, mixed)
+        self.assert_valid(cv, allpunc)
 
         cv = self.mkvalidator(SPECIAL=1)
-        self.assertInvalid(cv, none, "special")
-        self.assertValid(cv, one)
-        self.assertValid(cv, mixed)
-        self.assertValid(cv, allpunc)
+        self.assert_invalid(cv, none, "special")
+        self.assert_valid(cv, one)
+        self.assert_valid(cv, mixed)
+        self.assert_valid(cv, allpunc)
 
         cv = self.mkvalidator(SPECIAL=100)
-        self.assertInvalid(cv, none, "special")
-        self.assertInvalid(cv, one, "special")
-        self.assertInvalid(cv, mixed, "special")
-        self.assertInvalid(cv, allpunc, "special")
+        self.assert_invalid(cv, none, "special")
+        self.assert_invalid(cv, one, "special")
+        self.assert_invalid(cv, mixed, "special")
+        self.assert_invalid(cv, allpunc, "special")
 
     def test_minimum_nonascii_count(self):
         none = "regularchars and numbers 100"
@@ -171,19 +169,19 @@ class ComplexityValidatorTests(ValidatorTestCase):
         many = "\x00\x01\x02\x03\x04\x05\t\n\r"
 
         cv = self.mkvalidator(SPECIAL=0)
-        self.assertValid(cv, none)
-        self.assertValid(cv, one)
-        self.assertValid(cv, many)
+        self.assert_valid(cv, none)
+        self.assert_valid(cv, one)
+        self.assert_valid(cv, many)
 
         cv = self.mkvalidator(SPECIAL=1)
-        self.assertInvalid(cv, none)
-        self.assertValid(cv, one)
-        self.assertValid(cv, many)
+        self.assert_invalid(cv, none)
+        self.assert_valid(cv, one)
+        self.assert_valid(cv, many)
 
         cv = self.mkvalidator(SPECIAL=100)
-        self.assertInvalid(cv, none)
-        self.assertInvalid(cv, one)
-        self.assertInvalid(cv, many)
+        self.assert_invalid(cv, none)
+        self.assert_invalid(cv, one)
+        self.assert_invalid(cv, many)
 
     def test_minimum_words_count(self):
         none = ""
@@ -192,28 +190,28 @@ class ComplexityValidatorTests(ValidatorTestCase):
         many = "a b c d e f g h i 1 2 3 4 5 6 7 8 9 { $ # ! )}"
 
         cv = self.mkvalidator(WORDS=0)
-        self.assertValid(cv, none)
-        self.assertValid(cv, one)
-        self.assertValid(cv, some)
-        self.assertValid(cv, many)
+        self.assert_valid(cv, none)
+        self.assert_valid(cv, one)
+        self.assert_valid(cv, some)
+        self.assert_valid(cv, many)
 
         cv = self.mkvalidator(WORDS=1)
-        self.assertInvalid(cv, none, "unique words")
-        self.assertValid(cv, one)
-        self.assertValid(cv, some)
-        self.assertValid(cv, many)
+        self.assert_invalid(cv, none, "unique words")
+        self.assert_valid(cv, one)
+        self.assert_valid(cv, some)
+        self.assert_valid(cv, many)
 
         cv = self.mkvalidator(WORDS=10)
-        self.assertInvalid(cv, none, "unique words")
-        self.assertInvalid(cv, one, "unique words")
-        self.assertInvalid(cv, some, "unique words")
-        self.assertValid(cv, many)
+        self.assert_invalid(cv, none, "unique words")
+        self.assert_invalid(cv, one, "unique words")
+        self.assert_invalid(cv, some, "unique words")
+        self.assert_valid(cv, many)
 
         cv = self.mkvalidator(WORDS=100)
-        self.assertInvalid(cv, none, "unique words")
-        self.assertInvalid(cv, one, "unique words")
-        self.assertInvalid(cv, some, "unique words")
-        self.assertInvalid(cv, many, "unique words")
+        self.assert_invalid(cv, none, "unique words")
+        self.assert_invalid(cv, one, "unique words")
+        self.assert_invalid(cv, some, "unique words")
+        self.assert_invalid(cv, many, "unique words")
 
 
 class DictionaryValidator(ValidatorTestCase):
@@ -230,24 +228,24 @@ class DictionaryValidator(ValidatorTestCase):
 
     def test_provide_words_but_no_dictionary(self):
         dv = self.mkvalidator(words=["common", "words"])
-        self.assertValid(dv, self.different)
+        self.assert_valid(dv, self.different)
 
     def test_provide_dictionary_but_no_words(self):
         dv = self.mkvalidator(dictionary_words="common\nwords")
-        self.assertValid(dv, self.different)
+        self.assert_valid(dv, self.different)
 
     def test_thresholds(self):
         dv = self.mkvalidator(words=["common", "words"], threshold=0.0)
-        self.assertInvalid(dv, self.different, "dictionary word")
-        self.assertInvalid(dv, self.vsimilar, "dictionary word")
-        self.assertInvalid(dv, self.same, "dictionary word")
+        self.assert_invalid(dv, self.different, "dictionary word")
+        self.assert_invalid(dv, self.vsimilar, "dictionary word")
+        self.assert_invalid(dv, self.same, "dictionary word")
 
         dv = self.mkvalidator(words=["common", "words"], threshold=0.5)
-        self.assertValid(dv, self.different)
-        self.assertInvalid(dv, self.vsimilar, "dictionary word")
-        self.assertInvalid(dv, self.same, "dictionary word")
+        self.assert_valid(dv, self.different)
+        self.assert_invalid(dv, self.vsimilar, "dictionary word")
+        self.assert_invalid(dv, self.same, "dictionary word")
 
         dv = self.mkvalidator(words=["common", "words"], threshold=1.0)
-        self.assertValid(dv, self.different)
-        self.assertValid(dv, self.vsimilar)
-        self.assertInvalid(dv, self.same, "dictionary word")
+        self.assert_valid(dv, self.different)
+        self.assert_valid(dv, self.vsimilar)
+        self.assert_invalid(dv, self.same, "dictionary word")

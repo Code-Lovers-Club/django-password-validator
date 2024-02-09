@@ -1,9 +1,7 @@
-from django.conf import settings
 import django
 
-settings.configure()
+from django.conf import settings
 
-try:
-    django.setup()
-except AttributeError:  # django 1.4
-    pass
+
+settings.configure()
+django.setup()

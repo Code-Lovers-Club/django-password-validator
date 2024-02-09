@@ -1,10 +1,12 @@
 import re
+
 from pathlib import Path
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils.encoding import smart_str
 from django.utils.translation import gettext_lazy as _
+
 
 COMMON_SEQUENCES = [
     "0123456789",
@@ -29,7 +31,9 @@ PASSWORD_MIN_LENGTH = getattr(settings, "PASSWORD_MIN_LENGTH", 6)
 PASSWORD_MAX_LENGTH = getattr(settings, "PASSWORD_MAX_LENGTH", None)
 PASSWORD_DICTIONARY = getattr(settings, "PASSWORD_DICTIONARY", None)
 PASSWORD_MATCH_THRESHOLD = getattr(settings, "PASSWORD_MATCH_THRESHOLD", 0.9)
-PASSWORD_COMMON_SEQUENCES = getattr(settings, "PASSWORD_COMMON_SEQUENCES", COMMON_SEQUENCES)
+PASSWORD_COMMON_SEQUENCES = getattr(
+    settings, "PASSWORD_COMMON_SEQUENCES", COMMON_SEQUENCES
+)
 PASSWORD_COMPLEXITY = getattr(settings, "PASSWORD_COMPLEXITY", None)
 
 
@@ -59,7 +63,7 @@ class ComplexityValidator:
     def __init__(self, complexities):
         self.complexities = complexities
 
-    def __call__(self, value):  # noqa
+    def __call__(self, value):
         if self.complexities is None:
             return
 
@@ -82,20 +86,29 @@ class ComplexityValidator:
 
         errors = []
         if len(uppercase) < self.complexities.get("UPPER", 0):
-            errors.append(_("%(UPPER)s or more unique uppercase characters") % self.complexities)
+            errors.append(
+                _("%(UPPER)s or more unique uppercase characters") % self.complexities
+            )
         if len(lowercase) < self.complexities.get("LOWER", 0):
-            errors.append(_("%(LOWER)s or more unique lowercase characters") % self.complexities)
+            errors.append(
+                _("%(LOWER)s or more unique lowercase characters") % self.complexities
+            )
         if len(letters) < self.complexities.get("LETTERS", 0):
             errors.append(_("%(LETTERS)s or more unique letters") % self.complexities)
         if len(digits) < self.complexities.get("DIGITS", 0):
             errors.append(_("%(DIGITS)s or more unique digits") % self.complexities)
         if len(special) < self.complexities.get("SPECIAL", 0):
-            errors.append(_("%(SPECIAL)s or more non unique special characters") % self.complexities)
+            errors.append(
+                _("%(SPECIAL)s or more non unique special characters")
+                % self.complexities
+            )
         if len(words) < self.complexities.get("WORDS", 0):
             errors.append(_("%(WORDS)s or more unique words") % self.complexities)
 
         if errors:
-            raise ValidationError(self.message % (_("must contain ") + ", ".join(errors),), code=self.code)
+            raise ValidationError(
+                self.message % (_("must contain ") + ", ".join(errors),), code=self.code
+            )
 
 
 class BaseSimilarityValidator:
@@ -154,12 +167,12 @@ class DictionaryValidator(BaseSimilarityValidator):
     def get_dictionary_words(self, dictionary):
         if DICT_CACHE:
             return DICT_CACHE
-        if DICT_FILESIZE == -1:
+        if DICT_FILESIZE == -1:  # noqa: F823
             with Path.open(dictionary) as f:
                 f.seek(0, 2)
                 DICT_FILESIZE = f.tell()  # noqa: N806
 
-            if DICT_FILESIZE < 1000000:  # noqa: PLR2004
+            if DICT_FILESIZE < 1000000:
                 with Path.open(dictionary) as dictionary:
                     return [smart_str(x.strip()) for x in dictionary.readlines()]
         with Path.open(dictionary) as dictionary:
