@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "django-password-validator"
-version = "0.1.1"
+version = "0.1.2"
 description = "django-password-validator is a reusable app that provides a form field and validators that check the strength of a password."
 authors = ["Dharwin Perez <dharwin@codelovers.club>"]
 license = "LICENSE"
